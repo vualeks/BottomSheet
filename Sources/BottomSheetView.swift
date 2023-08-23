@@ -213,8 +213,8 @@ public final class BottomSheetView: UIView {
             bottomEqualConstraint,
             contentViewHeightConstraint
         ])
-
-        updateTargetOffsets()
+        
+        updateTargetOffsets(index: targetIndex)
         addGestureRecognizer(panGesture)
 
         transition(to: targetIndex)
@@ -283,6 +283,8 @@ public final class BottomSheetView: UIView {
         )
 
         animate(to: offset)
+        updateTargetOffsets(index: index)
+        createTranslationTargets()
     }
 
     // MARK: - Setup
@@ -422,12 +424,12 @@ public final class BottomSheetView: UIView {
 
     // MARK: - Offset calculation
 
-    private func updateTargetOffsets() {
+    private func updateTargetOffsets(index: Int = -1) {
         guard let superview = superview else { return }
 
         contentViewHeightConstraint.constant = 0
 
-        targetOffsets = contentHeights.map {
+        targetOffsets = [contentHeights[index == -1 ? currentTargetOffsetIndex : index]].map {
             BottomSheetCalculator.offset(for: contentView, in: superview, height: $0, useSafeAreaInsets: useSafeAreaInsets)
         }.sorted(by: >)
 
